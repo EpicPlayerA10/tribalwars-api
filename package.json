@@ -1,15 +1,16 @@
 {
   "name": "@epicplayera10/tribalwars-api",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/EpicPlayerA10/tribalwars-api"
+    "url": "git+https://github.com/EpicPlayerA10/tribalwars-api.git"
   },
-  "main": "lib/api.ts",
+  "main": "lib/api.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "start": "ts-node tests/index.ts"
   },
   "keywords": [],

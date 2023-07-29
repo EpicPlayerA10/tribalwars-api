@@ -1,0 +1,20 @@
+{
+  "name": "tribalwars-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/api.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node tests/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "socket.io-client": "2.5.0",
+    "ts-node": "^10.9.1",
+    "typed-emitter": "^2.1.0",
+    "typescript": "^5.1.6"
+  }
+}

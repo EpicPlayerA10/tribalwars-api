@@ -1,5 +1,5 @@
 {
-  "name": "tribalwars-api",
+  "name": "@epicplayera10/tribalwars-api",
   "version": "1.0.0",
   "description": "",
   "main": "src/api.ts",

@@ -1,8 +1,8 @@
-import io from "socket.io-client";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import {C2SPacket, S2CPacket} from "./packets/packets";
 import * as crypto from "crypto";
+import io from "socket.io-client";
 
 
 export type ClientEvents = {

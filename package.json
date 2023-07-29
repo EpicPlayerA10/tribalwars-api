@@ -2,6 +2,7 @@
   "name": "@epicplayera10/tribalwars-api",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "repository": {
     "url": "https://github.com/EpicPlayerA10/tribalwars-api"
   },

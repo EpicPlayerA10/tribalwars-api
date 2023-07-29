@@ -30,7 +30,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         });
 
         this.socket.on("connect", () => {
-            console.log("connected");
+            console.log("TribalWarsClient connected to SOCKET.IO via WebSocket");
         });
 
         this.socket.on("close", () => {

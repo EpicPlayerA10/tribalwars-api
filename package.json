@@ -2,6 +2,9 @@
   "name": "@epicplayera10/tribalwars-api",
   "version": "1.0.0",
   "description": "",
+  "repository": {
+    "url": "https://github.com/EpicPlayerA10/tribalwars-api"
+  },
   "main": "src/api.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import {TribalWarsClient} from "../src/api";
+import {TribalWarsClient} from "../src";
 
 dotenv.config();
 

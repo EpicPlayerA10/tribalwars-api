@@ -46,28 +46,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
     public async connect(credentials: Credentials) {
         // Reconnect logic
-        this.socket.on("reconnect", async () => {
-            if (this.user === null) {
-                throw Error("Can't reconnect without authorization first!")
-            }
-
-            let authResponse = await this.sendPacket({
-                type: "Authentication/reconnect",
-                data: {
-                    character: credentials.characterId,
-                    name: credentials.login,
-                    world: credentials.worldId,
-                    token: this.user.token
-                }
-            });
-
-            if (authResponse.type !== "Authentication/reconnected") {
-                throw new Error("Unexpected packet while reconnecting. " + authResponse.type, {
-                    cause: authResponse
-                });
-            }
-
-            console.log("TribalWarsClient reconnected!");
+        this.socket.on("reconnect", () => {
+            this.reconnect(credentials);
         });
 
         // Second layer of reconnecting
@@ -75,7 +55,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             // Server disconnects us
             if (reason === "io server disconnect") {
                 this.socket.connect();
-                this.login(credentials);
+                this.reconnect(credentials);
             }
         });
 
@@ -123,6 +103,30 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 cause: selectCharacterResponse
             });
         }
+    }
+
+    private async reconnect(credentials: Credentials) {
+        if (this.user === null) {
+            throw Error("Can't reconnect without authorization first!")
+        }
+
+        let authResponse = await this.sendPacket({
+            type: "Authentication/reconnect",
+            data: {
+                character: credentials.characterId,
+                name: credentials.login,
+                world: credentials.worldId,
+                token: this.user.token
+            }
+        });
+
+        if (authResponse.type !== "Authentication/reconnected") {
+            throw new Error("Unexpected packet while reconnecting. " + authResponse.type, {
+                cause: authResponse
+            });
+        }
+
+        console.log("TribalWarsClient reconnected!");
     }
 
     private async fetchData() {

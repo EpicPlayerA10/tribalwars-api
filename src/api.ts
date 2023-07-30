@@ -16,7 +16,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
     private responseID = 1;
 
-    public readonly tokenEmit: string = crypto.randomBytes(16).toString("hex");
+    private token: string | undefined;
+    //public readonly tokenEmit: string = crypto.randomBytes(16).toString("hex");
 
     constructor(login: string, password: string, characterId: number, worldId: string) {
         super();
@@ -27,6 +28,30 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             },
             secure: true,
             transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"],
+        });
+
+        this.socket.on("reconnect", async () => {
+            if (this.token === undefined) {
+                throw Error("Can't reconnect without authorization first!")
+            }
+
+            let authResponse = await this.sendPacket({
+                type: "Authentication/reconnect",
+                data: {
+                    character: characterId,
+                    name: login,
+                    world: worldId,
+                    token: this.token
+                }
+            });
+
+            if (authResponse.type !== "Authentication/reconnected") {
+                throw new Error("Unexpected packet while reconnecting. " + authResponse.type, {
+                    cause: authResponse
+                });
+            }
+
+            console.log("TribalWarsClient reconnected!");
         });
 
         // Packet receiver
@@ -45,7 +70,9 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                     }
                 });
 
-                if (loginResponse.type !== "Login/success") {
+                if (loginResponse.type === "Login/success") {
+                    this.token = loginResponse.data.token;
+                } else {
                     throw new Error("Unexpected packet while logging in. "+loginResponse.type, {
                         cause: loginResponse
                     });

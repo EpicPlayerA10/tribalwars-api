@@ -4,9 +4,12 @@ interface BasePacket {
 
 }
 
+interface BaseS2CPacket extends BasePacket {}
+interface BaseC2SPacket extends BasePacket {}
+
 
 // Message
-export interface MessageErrorS2CPacket extends BasePacket {
+export interface MessageErrorS2CPacket extends BaseS2CPacket {
     type: "Message/error",
     data: {
         error_code: string,
@@ -15,7 +18,7 @@ export interface MessageErrorS2CPacket extends BasePacket {
 }
 
 // System
-export interface SystemWelcomeS2CPacket extends BasePacket {
+export interface SystemWelcomeS2CPacket extends BaseS2CPacket {
     type: "System/welcome",
     data: {
         message: string,
@@ -25,7 +28,7 @@ export interface SystemWelcomeS2CPacket extends BasePacket {
     }
 }
 
-export interface SystemErrorS2CPacket extends BasePacket {
+export interface SystemErrorS2CPacket extends BaseS2CPacket {
     type: "System/error",
     data: {
         cause: string,
@@ -36,7 +39,11 @@ export interface SystemErrorS2CPacket extends BasePacket {
 }
 
 // Authentication
-export interface AuthCharacterSelectedS2CPacket extends BasePacket {
+export interface AuthReconnectedS2CPacket extends BaseS2CPacket {
+    type: "Authentication/reconnected"
+}
+
+export interface AuthCharacterSelectedS2CPacket extends BaseS2CPacket {
     type: "Authentication/characterSelected",
     data: {
         id: number,
@@ -51,7 +58,7 @@ export interface AuthCharacterSelectedS2CPacket extends BasePacket {
 }
 
 // Login
-export interface LoginSuccessS2CPacket extends BasePacket {
+export interface LoginSuccessS2CPacket extends BaseS2CPacket {
     type: "Login/success",
     data: {
         player_id: number,
@@ -72,7 +79,7 @@ export interface LoginSuccessS2CPacket extends BasePacket {
     }
 }
 
-export interface TribeSkillDonatedS2CPacket extends BasePacket {
+export interface TribeSkillDonatedS2CPacket extends BaseS2CPacket {
     type: "TribeSkill/donated",
     data: {
         level: number,
@@ -88,7 +95,7 @@ export interface TribeSkillDonatedS2CPacket extends BasePacket {
     }
 }
 
-export interface TribeSkillDonatedS2CPacket extends BasePacket {
+export interface TribeSkillDonatedS2CPacket extends BaseS2CPacket {
     type: "TribeSkill/donated",
     data: {
         level: number,
@@ -104,7 +111,7 @@ export interface TribeSkillDonatedS2CPacket extends BasePacket {
     }
 }
 
-export interface CharacterProfileS2CPacket extends BasePacket {
+export interface CharacterProfileS2CPacket extends BaseS2CPacket {
     type: "Character/profile",
     data: {
         character_id: number
@@ -138,12 +145,13 @@ export interface CharacterProfileS2CPacket extends BasePacket {
 
 export type S2CPacket = MessageErrorS2CPacket |
         SystemWelcomeS2CPacket | SystemErrorS2CPacket |
-        AuthCharacterSelectedS2CPacket |
+        AuthReconnectedS2CPacket | AuthCharacterSelectedS2CPacket |
         LoginSuccessS2CPacket |
         TribeSkillDonatedS2CPacket |
         CharacterProfileS2CPacket;
 
-export interface AuthLoginC2SPacket extends BasePacket {
+// Authentication
+export interface AuthLoginC2SPacket extends BaseC2SPacket {
     type: "Authentication/login",
     data: {
         name: string,
@@ -151,7 +159,17 @@ export interface AuthLoginC2SPacket extends BasePacket {
     }
 }
 
-export interface AuthSelectCharacterC2SPacket extends BasePacket {
+export interface AuthReconnectC2SPacket extends BaseC2SPacket {
+    type: "Authentication/reconnect",
+    data: {
+        character: number,
+        name: string,
+        world: string,
+        token: string
+    }
+}
+
+export interface AuthSelectCharacterC2SPacket extends BaseC2SPacket {
     type: "Authentication/selectCharacter",
     data: {
         id: number,
@@ -159,17 +177,20 @@ export interface AuthSelectCharacterC2SPacket extends BasePacket {
     }
 }
 
-export interface GameGetGameDataC2SPacket extends BasePacket {
+// Game
+export interface GameGetGameDataC2SPacket extends BaseC2SPacket {
     type: "GameDataBatch/getGameData"
 }
 
-export interface CharacterGetProfileC2SPacket extends BasePacket {
+
+// Character
+export interface CharacterGetProfileC2SPacket extends BaseC2SPacket {
     type: "Character/getProfile",
     data: {
         character_id: number
     }
 }
 
-export type C2SPacket = AuthLoginC2SPacket | AuthSelectCharacterC2SPacket |
+export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket |
         GameGetGameDataC2SPacket |
         CharacterGetProfileC2SPacket;

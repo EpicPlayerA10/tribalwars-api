@@ -30,7 +30,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"],
         });
 
-        this.socket.on("reconnect", async () => {
+        /*this.socket.on("reconnect", async () => {
             if (this.token === undefined) {
                 throw Error("Can't reconnect without authorization first!")
             }
@@ -52,7 +52,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             }
 
             console.log("TribalWarsClient reconnected!");
-        });
+        });*/
 
         // Packet receiver
         this.socket.on("msg", async (packet: S2CPacket) => {

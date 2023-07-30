@@ -12,7 +12,7 @@ export type ClientEvents = {
 
 
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
-    private readonly socket: SocketIOClient.Socket;
+    public readonly socket: SocketIOClient.Socket;
 
     private responseID = 1;
 

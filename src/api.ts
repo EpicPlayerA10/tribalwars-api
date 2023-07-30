@@ -2,6 +2,9 @@ import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import {C2SPacket, S2CPacket} from "./packets/packets";
 import io from "socket.io-client";
+import {User} from "./model/User";
+import {PacketGameData} from "./packets/packets-types";
+import * as console from "console";
 
 
 export type ClientEvents = {
@@ -9,16 +12,29 @@ export type ClientEvents = {
     ready: () => void
 }
 
+export interface Credentials {
+    login: string
+    password: string
+    characterId: number
+    worldId: string
+}
+
 
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
-    private socket: SocketIOClient.Socket | undefined;
+    public readonly socket: SocketIOClient.Socket;
 
-    private responseID = 1;
+    private nextResponseID = 1;
 
-    private token: string | undefined;
-    //public readonly tokenEmit: string = crypto.randomBytes(16).toString("hex");
+    // User
+    private _user: User | null = null;
 
-    public async login(login: string, password: string, characterId: number, worldId: string) {
+    // GameData
+    private _gameData: PacketGameData | null = null;
+
+    constructor() {
+        super();
+
+        // Create socket
         this.socket = io("wss://pl.tribalwars2.com", {
             query: {
                 platform: "desktop"
@@ -26,20 +42,22 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             secure: true,
             transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"],
         });
+    }
 
-        // Reconnect
+    public async connect(credentials: Credentials) {
+        // Reconnect logic
         this.socket.on("reconnect", async () => {
-            if (this.token === undefined) {
+            if (this.user === null) {
                 throw Error("Can't reconnect without authorization first!")
             }
 
             let authResponse = await this.sendPacket({
                 type: "Authentication/reconnect",
                 data: {
-                    character: characterId,
-                    name: login,
-                    world: worldId,
-                    token: this.token
+                    character: credentials.characterId,
+                    name: credentials.login,
+                    world: credentials.worldId,
+                    token: this.user.token
                 }
             });
 
@@ -52,22 +70,39 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             console.log("TribalWarsClient reconnected!");
         });
 
+        // Second layer of reconnecting
+        this.socket.on("disconnect", (reason: string) => {
+            // Server disconnects us
+            if (reason === "io server disconnect") {
+                this.socket.connect();
+                this.login(credentials);
+            }
+        });
+
         // Packet receiver
         this.socket.on("msg", async (packet: S2CPacket) => {
             this.emit("onPacketReceived", packet, packet.id);
         });
 
         // Login to account
+        await this.login(credentials);
+
+        await this.fetchData();
+
+        this.emit("ready");
+    }
+
+    private async login(credentials: Credentials) {
         let loginResponse = await this.sendPacket({
             type: "Authentication/login",
             data: {
-                name: login,
-                pass: password
+                name: credentials.login,
+                pass: credentials.password
             }
         });
 
         if (loginResponse.type === "Login/success") {
-            this.token = loginResponse.data.token;
+            this._user = new User(loginResponse);
         } else {
             throw new Error("Unexpected packet while logging in. "+loginResponse.type, {
                 cause: loginResponse
@@ -78,8 +113,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         let selectCharacterResponse = await this.sendPacket({
             type: "Authentication/selectCharacter",
             data: {
-                id: characterId,
-                world_id: worldId
+                id: credentials.characterId,
+                world_id: credentials.worldId
             }
         });
 
@@ -88,16 +123,28 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 cause: selectCharacterResponse
             });
         }
+    }
 
-        this.emit("ready");
+    private async fetchData() {
+        let gameDataResponse = await this.sendPacket({
+            type: "GameDataBatch/getGameData"
+        });
+
+        if (gameDataResponse.type === "GameDataBatch/gameData") {
+            this._gameData = gameDataResponse.data;
+        } else {
+            throw new Error("Unexpected packet while fetching game data. "+gameDataResponse.type, {
+                cause: gameDataResponse
+            });
+        }
     }
 
     public sendPacket(packet: C2SPacket): Promise<S2CPacket> {
-        let currentResponseId = this.responseID++;
+        let currentResponseId = this.nextResponseID++;
 
         packet.id = currentResponseId;
 
-        this.socket?.emit("msg", packet);
+        this.socket.emit("msg", packet);
 
         // Return promise with received response packet
         return new Promise<S2CPacket>((resolve, reject) => {
@@ -112,7 +159,11 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         });
     }
 
-    public getSocket() {
-        return this.socket;
+    get user(): User | null {
+        return this._user;
+    }
+
+    get gameData(): PacketGameData | null {
+        return this._gameData;
     }
 }

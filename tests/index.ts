@@ -13,14 +13,22 @@ client.on("ready", async () => {
     });
 
     console.log("GAMEDATA");
-    console.log(response2);
+
+    if (response2.type === "GameDataBatch/gameData") {
+        console.log("validated gamedata");
+    }
+
 });
 
 client.on("onPacketReceived", packet => {
     console.log("[RECEIVED] "+packet.type);
 })
 
-client.login(process.env.LOGIN as string, process.env.PASSWORD as string,
-        process.env.CHARACTER_ID as unknown as number, process.env.CHARACTER_WORLD_ID as string);
+client.connect({
+    login: process.env.LOGIN as string,
+    password: process.env.PASSWORD as string,
+    characterId:  process.env.CHARACTER_ID as unknown as number,
+    worldId: process.env.CHARACTER_WORLD_ID as string
+});
 
 

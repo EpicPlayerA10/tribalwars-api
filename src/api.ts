@@ -12,7 +12,7 @@ export type ClientEvents = {
 
 
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
-    private socket: SocketIOClient.Socket;
+    private readonly socket: SocketIOClient.Socket;
 
     private responseID = 1;
 
@@ -28,16 +28,6 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             secure: true,
             transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"],
         });
-
-        this.socket.on("connect", () => {
-            console.log("TribalWarsClient connected to SOCKET.IO via WebSocket");
-        });
-
-        this.socket.on("close", () => {
-            console.log("close");
-        });
-
-        this.socket.on("error", console.log);
 
         // Packet receiver
         this.socket.on("msg", async (packet: S2CPacket) => {

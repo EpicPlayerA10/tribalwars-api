@@ -10,7 +10,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsc --build --clean & tsc",
     "start": "ts-node tests/index.ts",
     "publish-pkg": "npm run build & npm publish"
   },

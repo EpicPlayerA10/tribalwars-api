@@ -11,7 +11,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "ts-node tests/index.ts"
+    "start": "ts-node tests/index.ts",
+    "publish-pkg": "npm run build & npm publish"
   },
   "keywords": [],
   "author": "",

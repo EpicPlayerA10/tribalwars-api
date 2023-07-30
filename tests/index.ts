@@ -16,6 +16,7 @@ client.on("ready", async () => {
 
     if (response2.type === "GameDataBatch/gameData") {
         console.log("validated gamedata");
+        console.log(response2);
     }
 
 });

@@ -3,8 +3,8 @@ import {TribalWarsClient} from "../src";
 
 dotenv.config();
 
-let client = new TribalWarsClient(process.env.LOGIN as string, process.env.PASSWORD as string,
-        process.env.CHARACTER_ID as unknown as number, process.env.CHARACTER_WORLD_ID as string);
+let client = new TribalWarsClient();
+
 client.on("ready", async () => {
     console.log("Ready!")
 
@@ -17,9 +17,10 @@ client.on("ready", async () => {
 });
 
 client.on("onPacketReceived", packet => {
-    console.log("[RECEIVED] "+packet.type)
+    console.log("[RECEIVED] "+packet.type);
 })
 
-
+client.login(process.env.LOGIN as string, process.env.PASSWORD as string,
+        process.env.CHARACTER_ID as unknown as number, process.env.CHARACTER_WORLD_ID as string);
 
 

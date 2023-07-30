@@ -1,7 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import {C2SPacket, S2CPacket} from "./packets/packets";
-import * as crypto from "crypto";
 import io from "socket.io-client";
 
 
@@ -12,16 +11,14 @@ export type ClientEvents = {
 
 
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
-    public readonly socket: SocketIOClient.Socket;
+    private socket: SocketIOClient.Socket | undefined;
 
     private responseID = 1;
 
     private token: string | undefined;
     //public readonly tokenEmit: string = crypto.randomBytes(16).toString("hex");
 
-    constructor(login: string, password: string, characterId: number, worldId: string) {
-        super();
-
+    public async login(login: string, password: string, characterId: number, worldId: string) {
         this.socket = io("wss://pl.tribalwars2.com", {
             query: {
                 platform: "desktop"
@@ -30,7 +27,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"],
         });
 
-        /*this.socket.on("reconnect", async () => {
+        // Reconnect
+        this.socket.on("reconnect", async () => {
             if (this.token === undefined) {
                 throw Error("Can't reconnect without authorization first!")
             }
@@ -52,50 +50,46 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             }
 
             console.log("TribalWarsClient reconnected!");
-        });*/
+        });
 
         // Packet receiver
         this.socket.on("msg", async (packet: S2CPacket) => {
-            let packetType = packet.type;
-
             this.emit("onPacketReceived", packet, packet.id);
+        });
 
-            if (packetType === "System/welcome") {
-                // Login to account
-                let loginResponse = await this.sendPacket({
-                    type: "Authentication/login",
-                    data: {
-                        name: login,
-                        pass: password
-                    }
-                });
-
-                if (loginResponse.type === "Login/success") {
-                    this.token = loginResponse.data.token;
-                } else {
-                    throw new Error("Unexpected packet while logging in. "+loginResponse.type, {
-                        cause: loginResponse
-                    });
-                }
-
-                // Select character
-                let selectCharacterResponse = await this.sendPacket({
-                    type: "Authentication/selectCharacter",
-                    data: {
-                        id: characterId,
-                        world_id: worldId
-                    }
-                });
-
-                if (selectCharacterResponse.type !== "Authentication/characterSelected") {
-                    throw new Error("Unexpected packet while selecting character. "+loginResponse.type, {
-                        cause: selectCharacterResponse
-                    });
-                }
-
-                this.emit("ready");
+        // Login to account
+        let loginResponse = await this.sendPacket({
+            type: "Authentication/login",
+            data: {
+                name: login,
+                pass: password
             }
         });
+
+        if (loginResponse.type === "Login/success") {
+            this.token = loginResponse.data.token;
+        } else {
+            throw new Error("Unexpected packet while logging in. "+loginResponse.type, {
+                cause: loginResponse
+            });
+        }
+
+        // Select character
+        let selectCharacterResponse = await this.sendPacket({
+            type: "Authentication/selectCharacter",
+            data: {
+                id: characterId,
+                world_id: worldId
+            }
+        });
+
+        if (selectCharacterResponse.type !== "Authentication/characterSelected") {
+            throw new Error("Unexpected packet while selecting character. "+loginResponse.type, {
+                cause: selectCharacterResponse
+            });
+        }
+
+        this.emit("ready");
     }
 
     public sendPacket(packet: C2SPacket): Promise<S2CPacket> {
@@ -103,10 +97,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
         packet.id = currentResponseId;
 
-        //console.log("SENT");
-        //console.log(packet);
-
-        this.socket.emit("msg", packet);
+        this.socket?.emit("msg", packet);
 
         // Return promise with received response packet
         return new Promise<S2CPacket>((resolve, reject) => {
@@ -119,5 +110,9 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
             this.on("onPacketReceived", callback);
         });
+    }
+
+    public getSocket() {
+        return this.socket;
     }
 }

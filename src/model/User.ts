@@ -1,5 +1,5 @@
 import {PacketCharacter} from "../packets/packets-types";
-import {LoginSuccessS2CPacket} from "../packets/s2c/authentication";
+import {LoginSuccessS2CPacket} from "../packets/s2c";
 
 export class User {
     public readonly player_id: number;

@@ -1,6 +1,6 @@
-import {BasePacket} from "../packets";
+import {BaseS2CPacket} from "../packets";
 
-export interface TribeSkillDonatedS2CPacket extends BasePacket {
+export interface TribeSkillDonatedS2CPacket extends BaseS2CPacket {
     type: "TribeSkill/donated",
     data: {
         level: number,

@@ -1,6 +1,6 @@
-import {BasePacket} from "../packets";
+import {BaseS2CPacket} from "../packets";
 
-export interface MessageErrorS2CPacket extends BasePacket {
+export interface MessageErrorS2CPacket extends BaseS2CPacket {
     type: "Message/error",
     data: {
         error_code: string,
@@ -8,7 +8,7 @@ export interface MessageErrorS2CPacket extends BasePacket {
     }
 }
 
-export interface SystemWelcomeS2CPacket extends BasePacket {
+export interface SystemWelcomeS2CPacket extends BaseS2CPacket {
     type: "System/welcome",
     data: {
         message: string,
@@ -18,7 +18,7 @@ export interface SystemWelcomeS2CPacket extends BasePacket {
     }
 }
 
-export interface SystemErrorS2CPacket extends BasePacket {
+export interface SystemErrorS2CPacket extends BaseS2CPacket {
     type: "System/error",
     data: {
         cause: string,

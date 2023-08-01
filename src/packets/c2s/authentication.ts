@@ -1,13 +1,13 @@
-import {BasePacket} from "../packets";
+import {BaseC2SPacket} from "../packets";
 
-export interface AuthLoginC2SPacket extends BasePacket {
+export interface AuthLoginC2SPacket extends BaseC2SPacket {
     type: "Authentication/login",
     data: {
         name: string
     } & ({ pass: string } | { token: string }) // Token or password
 }
 
-export interface AuthReconnectC2SPacket extends BasePacket {
+export interface AuthReconnectC2SPacket extends BaseC2SPacket {
     type: "Authentication/reconnect",
     data: {
         character: number,
@@ -17,7 +17,7 @@ export interface AuthReconnectC2SPacket extends BasePacket {
     }
 }
 
-export interface AuthSelectCharacterC2SPacket extends BasePacket {
+export interface AuthSelectCharacterC2SPacket extends BaseC2SPacket {
     type: "Authentication/selectCharacter",
     data: {
         id: number,

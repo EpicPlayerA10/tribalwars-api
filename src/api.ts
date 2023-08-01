@@ -1,10 +1,9 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import {C2SPacket, S2CPacket} from "./packets/packets";
+import {C2SPacket, S2CPacket, BasePacket} from "./packets/packets";
 import io from "socket.io-client";
 import {User} from "./model/User";
 import {PacketGameData} from "./packets/packets-types";
-import * as console from "console";
 
 
 export type ClientEvents = {
@@ -67,7 +66,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         // Login to account
         await this.login(credentials);
 
-        await this.fetchData();
+        // Fetches data
+        await this.syncData();
 
         this.emit("ready");
     }
@@ -129,7 +129,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         console.log("TribalWarsClient reconnected!");
     }
 
-    private async fetchData() {
+    private async syncData() {
         let gameDataResponse = await this.sendPacket({
             type: "GameDataBatch/getGameData"
         });
@@ -146,7 +146,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     public sendPacket(packet: C2SPacket): Promise<S2CPacket> {
         let currentResponseId = this.nextResponseID++;
 
-        packet.id = currentResponseId;
+        // Set response id (internal value)
+        (packet as BasePacket).id = currentResponseId;
 
         this.socket.emit("msg", packet);
 

@@ -1,6 +1,6 @@
-import {BasePacket} from "../packets";
+import {BaseS2CPacket} from "../packets";
 
-export interface CharacterProfileS2CPacket extends BasePacket {
+export interface CharacterProfileS2CPacket extends BaseS2CPacket {
     type: "Character/profile",
     data: {
         character_id: number

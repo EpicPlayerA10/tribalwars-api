@@ -67,3 +67,22 @@ export interface PacketGameData {
     "WorldConfig/config": {} // TODO
     "Achievement/all": {} // TODO
 }
+
+export interface PacketTribeMember {
+    id: number
+    name: string
+    title: string
+    points: number
+    victory_points: number
+    villages: number
+    global_rank: number
+    honor: number
+    profile_icon: number
+    loyalty: number
+    rights: Array<"diplomacy" | "forum" | "members" | "news" | "noble_planner" | "profile" | "quests" | "recruit" | "settings" | "skills" | "wars">
+    trusted: 0 | 1
+    last_login: number
+    under_attack: boolean
+    banned: boolean
+    ban_expires: number
+}

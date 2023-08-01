@@ -1,11 +1,11 @@
-import {BasePacket} from "../packets";
+import {BaseS2CPacket} from "../packets";
 import {PacketCharacter, PacketWorld} from "../packets-types";
 
-export interface AuthReconnectedS2CPacket extends BasePacket {
+export interface AuthReconnectedS2CPacket extends BaseS2CPacket {
     type: "Authentication/reconnected"
 }
 
-export interface AuthCharacterSelectedS2CPacket extends BasePacket {
+export interface AuthCharacterSelectedS2CPacket extends BaseS2CPacket {
     type: "Authentication/characterSelected",
     data: {
         id: number,
@@ -19,7 +19,7 @@ export interface AuthCharacterSelectedS2CPacket extends BasePacket {
     }
 }
 
-export interface LoginSuccessS2CPacket extends BasePacket {
+export interface LoginSuccessS2CPacket extends BaseS2CPacket {
     type: "Login/success",
     data: {
         player_id: number,

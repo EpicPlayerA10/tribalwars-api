@@ -6,9 +6,31 @@ dotenv.config();
 let client = new TribalWarsClient();
 
 client.on("ready", async () => {
-    console.log("Ready!")
+    console.log("Ready!");
 
-    let response2 = await client.sendPacket({
+    let response = await client.sendPacket({
+        type: "Map/getVillagesByArea",
+        data: {
+            //character_id: 906567,
+            x: 500,
+            y: 500,
+            height: 50,
+            width: 50
+        }
+    });
+
+    console.log(response);
+
+    /*let response = await client.sendPacket({
+        type: "VillageBatch/getVillageData",
+        data: {
+            village_ids: [2904]
+        }
+    });
+
+    console.log(response);*/
+
+    /*let response2 = await client.sendPacket({
         type: "GameDataBatch/getGameData"
     });
 
@@ -17,7 +39,7 @@ client.on("ready", async () => {
     if (response2.type === "GameDataBatch/gameData") {
         console.log("validated gamedata");
         console.log(response2);
-    }
+    }*/
 
 });
 

@@ -1,10 +1,17 @@
 // S2C
 import {
     AuthCharacterSelectedS2CPacket,
-    AuthReconnectedS2CPacket, CharacterProfileS2CPacket, GameDataS2CPacket, LoginSuccessS2CPacket,
+    AuthReconnectedS2CPacket,
+    CharacterProfileS2CPacket,
+    GameDataS2CPacket,
+    LoginSuccessS2CPacket,
+    MapVillageDataS2CPacket,
     MessageErrorS2CPacket,
     SystemErrorS2CPacket,
-    SystemWelcomeS2CPacket, TribeMemberListS2CPacket, TribeSkillDonatedS2CPacket
+    SystemWelcomeS2CPacket,
+    TribeMemberListS2CPacket,
+    TribeSkillDonatedS2CPacket,
+    VillageDataS2CPacket
 } from "./s2c";
 
 // S2C
@@ -12,7 +19,7 @@ import {
     AuthLoginC2SPacket,
     AuthReconnectC2SPacket,
     AuthSelectCharacterC2SPacket, CharacterGetProfileC2SPacket,
-    GameGetGameDataC2SPacket, TribeGetMemberListC2SPacket
+    GameGetGameDataC2SPacket, MapGetVillagesByAreaC2SPacket, TribeGetMemberListC2SPacket, VillageGetVillageDataC2SPacket
 } from "./c2s";
 
 export interface BasePacket {
@@ -30,9 +37,13 @@ export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemE
         | TribeSkillDonatedS2CPacket // TribeSkill
         | CharacterProfileS2CPacket // Character
         | TribeMemberListS2CPacket // Tribe
+        | VillageDataS2CPacket // Village
+        | MapVillageDataS2CPacket // Map
 
 
 export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket // Authentication
         | GameGetGameDataC2SPacket // Game data
         | CharacterGetProfileC2SPacket // Character
         | TribeGetMemberListC2SPacket // Tribe
+        | VillageGetVillageDataC2SPacket // Village
+        | MapGetVillagesByAreaC2SPacket // Map

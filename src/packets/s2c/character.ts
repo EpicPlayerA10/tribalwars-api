@@ -14,7 +14,13 @@ export interface CharacterProfileS2CPacket extends BaseS2CPacket {
         rank_old: number
         points: number
         victory_points: number
-        villages: [] // TODO
+        villages: Array<{
+            village_id: number
+            village_name: string
+            village_x: number
+            village_y: number
+            points: number
+        }>
         points_per_villages: number
         bash_points_def: number
         bash_points_off: number

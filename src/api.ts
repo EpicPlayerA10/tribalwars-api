@@ -37,8 +37,6 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     constructor() {
         super();
 
-        //this.setMaxListeners(1000000);
-
         // Create socket
         this.socket = io("wss://pl.tribalwars2.com", {
             query: {
@@ -235,6 +233,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
             setTimeout(() => {
                 if (!gotResponse) {
+                    this.removeListener("onPacketReceived", callback);
                     reject(Error(`Packet ${packet.type} timed out`));
                 }
             }, 30000);

@@ -1,6 +1,6 @@
 {
   "name": "@epicplayera10/tribalwars-api",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
   "files": [
     "lib",
     "typings"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^20.4.7"
+  }
 }

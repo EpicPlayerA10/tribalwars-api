@@ -296,8 +296,23 @@ export interface PacketVillage {
     }
 }
 
-export interface PacketAvailableUnits {
-    in_town: number
-    support: number
-    total: number
+export interface PacketPremiumItem {
+    id: number
+    type: string
+    amount: number
+    image: any
+    content?: {
+        wood: number | string
+        clay: number | string
+        iron: number | string
+        archer?: number
+        coins?: string
+    }
+    name: any
+    description: any
+    last_amount: number
+    usable: number
+    effect: any
+    coins?: number
+    villages?: number
 }

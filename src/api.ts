@@ -50,7 +50,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         });
     }
 
-    public async connect(credentials: Credentials) {
+    public connect(credentials: Credentials) {
         this.socket.on("connect", (...args: any) => {
             console.log("connect");
             console.log(args);

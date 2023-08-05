@@ -1,13 +1,14 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import {C2SPacket, S2CPacket, BasePacket} from "./packets/packets";
+import {C2SPacket, S2CPacket, BasePacket, ResponseID} from "./packets/packets";
 import io from "socket.io-client";
 import {User} from "./model/User";
 import {PacketGameData, PacketPremiumItem} from "./packets/packets-types";
+import {randomUUID, UUID} from "crypto";
 
 
 export type ClientEvents = {
-    onPacketReceived: (packet: S2CPacket, responseId?: number) => void
+    onPacketReceived: (packet: S2CPacket, responseId?: number | UUID) => void
     onPacketSent: (packet: C2SPacket) => void
     ready: () => void
 }
@@ -23,7 +24,7 @@ export interface Credentials {
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
     public readonly socket: SocketIOClient.Socket;
 
-    private nextResponseID = 1;
+    private packetCounter = 1;
 
     // User
     private _user: User | null = null;
@@ -34,6 +35,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     // Inventory
     private _inventory: Readonly<PacketPremiumItem>[] | null = null;
 
+    private establishedConnection = false;
+
     constructor() {
         super();
 
@@ -43,15 +46,13 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 platform: "desktop"
             },
             secure: true,
-            transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"],
-            timeout: 30000
+            transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"]
         });
     }
 
     public connect(credentials: Credentials) {
-        this.socket.on("connect", (...args: any) => {
-            console.log("connect");
-            console.log(args);
+        this.socket.on("connect", () => {
+            console.log("Connected");
         });
 
         this.socket.on("connect_error", (...args: any) => {
@@ -80,8 +81,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         });
 
         this.socket.on("reconnecting", (...args: any) => {
+            this.establishedConnection = false;
             console.log("reconnecting");
-            console.log(args);
         });
 
         // Reconnect logic
@@ -92,6 +93,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
         // Second layer of reconnecting
         this.socket.on("disconnect", async (reason: string) => {
+            this.establishedConnection = false;
             // Server disconnects us
             if (reason === "io server disconnect") {
                 this.socket.connect();
@@ -110,6 +112,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
                 // Fetches data
                 await this.syncData();
+
+                this.establishedConnection = true;
 
                 this.emit("ready");
 
@@ -155,7 +159,6 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
     private async reconnect(credentials: Credentials) {
         if (this.user === null) {
-            await this.login(credentials);
             return;
         }
 
@@ -175,6 +178,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             });
         }
 
+        this.establishedConnection = true;
         console.log("TribalWarsClient reconnected!");
     }
 
@@ -206,8 +210,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         }
     }
 
-    public sendPacket(packet: C2SPacket): Promise<S2CPacket> {
-        let currentResponseId = this.nextResponseID++;
+    public sendPacket(packet: C2SPacket, timeout=20000): Promise<S2CPacket> {
+        let currentResponseId: ResponseID = `${this.packetCounter++}-${randomUUID()}`;
 
         // Set response id (internal value)
         (packet as BasePacket).id = currentResponseId;
@@ -218,25 +222,27 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
         // Return promise with received response packet
         return new Promise<S2CPacket>((resolve, reject) => {
-            let gotResponse = false;
+            let timeoutCallback: NodeJS.Timeout | undefined;
 
-            let callback: ClientEvents["onPacketReceived"] = (packet, responseId) => {
+            if (timeout !== -1) {
+                timeoutCallback = setTimeout(() => {
+                    this.removeListener("onPacketReceived", listener);
+                    reject(Error(`Packet ${packet.type} timed out`));
+                }, timeout);
+            }
+
+            let listener: ClientEvents["onPacketReceived"] = (packet, responseId) => {
                 if (currentResponseId === responseId) {
                     resolve(packet);
-                    this.removeListener("onPacketReceived", callback);
 
-                    gotResponse = true;
+                    if (timeoutCallback) {
+                        clearTimeout(timeoutCallback);
+                    }
+                    this.removeListener("onPacketReceived", listener);
                 }
             }
 
-            this.on("onPacketReceived", callback);
-
-            setTimeout(() => {
-                if (!gotResponse) {
-                    this.removeListener("onPacketReceived", callback);
-                    reject(Error(`Packet ${packet.type} timed out`));
-                }
-            }, 30000);
+            this.on("onPacketReceived", listener);
         });
     }
 
@@ -251,5 +257,9 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
     get inventory(): Readonly<PacketPremiumItem>[] | null {
         return this._inventory;
+    }
+
+    public isConnected() {
+        return this.socket.connected && this.establishedConnection;
     }
 }

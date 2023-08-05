@@ -32,9 +32,17 @@ import {
     WheelEventSpinC2SPacket,
     WheelEventStartEventC2SPacket
 } from "./c2s";
+import {UUID} from "crypto";
+
+// First number is a packet count
+// Second parameter is a random UUID
+export type ResponseID = `${number}-${UUID}`;
 
 export interface BasePacket {
-    id?: number; // Response id
+    // Response id. Game is using number but this API
+    // is using UUID to avoid ID collision. The TW2 backend is simply
+    // forwarding the 'id' field without type-checking
+    id?: number | ResponseID;
 }
 
 export type BaseS2CPacket = BasePacket;

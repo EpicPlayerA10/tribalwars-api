@@ -15,6 +15,7 @@ export interface AuthCharacterSelectedS2CPacket extends BaseS2CPacket {
         owner_id: number,
         owner_name: string, // It seems that it is the same as 'name' field
         tribe_id: number,
+        tokenEmit: string,
         tribe_rights: string[]
     }
 }

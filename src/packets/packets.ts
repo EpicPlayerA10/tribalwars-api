@@ -47,7 +47,13 @@ export interface BasePacket {
 
 export type BaseS2CPacket = BasePacket;
 
-export type BaseC2SPacket = Omit<BasePacket, "id">;
+export type BaseInternalC2SPacket = BasePacket & {
+    data: {
+        tokenEmit?: string
+    }
+}
+
+export type BaseC2SPacket = Omit<BaseInternalC2SPacket, "id" | "data">;
 
 
 export type S2CPacket = Readonly<

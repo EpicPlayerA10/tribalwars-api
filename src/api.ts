@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import {C2SPacket, S2CPacket, BasePacket, ResponseID} from "./packets/packets";
+import {C2SPacket, S2CPacket, BasePacket, ResponseID, BaseC2SPacket, BaseInternalC2SPacket} from "./packets/packets";
 import io from "socket.io-client";
 import {User} from "./model/User";
 import {PacketGameData, PacketMapVillage, PacketPremiumItem} from "./packets/packets-types";
@@ -25,6 +25,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     public readonly socket: SocketIOClient.Socket;
 
     private packetCounter = 1;
+
+    private tokenEmit: string | undefined;
 
     // User
     private _user: User | null = null;
@@ -120,6 +122,9 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 this.emit("ready");
 
                 firstWelcome = false;
+            } else if (packet.type === "GameGuard/secretTokenRefresh") {
+                // Refresh tokenEmit
+                this.tokenEmit = packet.data.secret_token;
             }
         });
     }
@@ -152,8 +157,10 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             }
         });
 
-        if (selectCharacterResponse.type !== "Authentication/characterSelected") {
-            throw new Error("Unexpected packet while selecting character. "+loginResponse.type, {
+        if (selectCharacterResponse.type === "Authentication/characterSelected") {
+            this.tokenEmit = selectCharacterResponse.data.tokenEmit;
+        } else {
+            throw new Error("Unexpected packet while selecting character. "+selectCharacterResponse.type, {
                 cause: selectCharacterResponse
             });
         }
@@ -215,8 +222,22 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     public sendPacket(packet: C2SPacket, timeout=20000): Promise<S2CPacket> {
         let currentResponseId: ResponseID = `${this.packetCounter++}-${randomUUID()}`;
 
-        // Set response id (internal value)
-        (packet as BasePacket).id = currentResponseId;
+        // Set some internal values
+        {
+            let basePacket = packet as BaseInternalC2SPacket;
+            basePacket.id = currentResponseId
+
+            if (this.tokenEmit) {
+                if (basePacket.data) {
+                    basePacket.data.tokenEmit = this.tokenEmit;
+                } else {
+                    basePacket.data = {
+                        tokenEmit: this.tokenEmit
+                    }
+                }
+
+            }
+        }
 
         this.emit("onPacketSent", packet);
 

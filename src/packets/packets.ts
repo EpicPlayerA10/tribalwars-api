@@ -5,7 +5,7 @@ import {
     CharacterProfileS2CPacket,
     GameDataS2CPacket, GameGuardGetInfoS2CPacket, GameGuardSecretTokenRefreshS2CPacket, GameGuardSendInfoS2CPacket,
     LoginSuccessS2CPacket,
-    MapVillageDataS2CPacket,
+    MapVillageDataS2CPacket, MapVillageDetailsS2CPacket,
     MessageErrorS2CPacket, PremiumItemsS2CPacket, PremiumItemUsedS2CPacket,
     SystemErrorS2CPacket,
     SystemWelcomeS2CPacket,
@@ -21,7 +21,7 @@ import {
     AuthSelectCharacterC2SPacket,
     CharacterGetProfileC2SPacket,
     GameGetGameDataC2SPacket,
-    GameGuardSendInfoC2SPacket,
+    GameGuardSendInfoC2SPacket, MapGetVillageDetailsC2SPacket,
     MapGetVillagesByAreaC2SPacket, PremiumListItemsC2SPacket,
     PremiumUseItemC2SPacket,
     TribeGetMemberListC2SPacket,
@@ -58,7 +58,7 @@ export type S2CPacket = Readonly<
         | CharacterProfileS2CPacket // Character
         | TribeMemberListS2CPacket // Tribe
         | VillageDataS2CPacket // Village
-        | MapVillageDataS2CPacket // Map
+        | MapVillageDataS2CPacket | MapVillageDetailsS2CPacket // Map
         | GameGuardSendInfoS2CPacket | GameGuardGetInfoS2CPacket | GameGuardSecretTokenRefreshS2CPacket // GameGuard (probably game anticheat)
         | PremiumItemUsedS2CPacket | PremiumItemsS2CPacket // Premium
         | WheelEventSpunS2CPacket // Wheel Event
@@ -72,7 +72,7 @@ export type C2SPacket = Readonly<
         | TribeGetMemberListC2SPacket // Tribe
         | TribeSkillDonateC2SPacket // TribeSkill
         | VillageGetVillageDataC2SPacket // Village
-        | MapGetVillagesByAreaC2SPacket // Map
+        | MapGetVillagesByAreaC2SPacket | MapGetVillageDetailsC2SPacket // Map
         | GameGuardSendInfoC2SPacket // GameGuard (probably game anticheat)
         | WheelEventSpinC2SPacket | WheelEventGetProgressC2SPacket | WheelEventRefillC2SPacket | WheelEventStartEventC2SPacket | WheelEventGetEventC2SPacket // Wheel Event
         | PremiumUseItemC2SPacket | PremiumListItemsC2SPacket // Premium

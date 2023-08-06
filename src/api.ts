@@ -3,7 +3,7 @@ import TypedEmitter from "typed-emitter";
 import {C2SPacket, S2CPacket, BasePacket, ResponseID} from "./packets/packets";
 import io from "socket.io-client";
 import {User} from "./model/User";
-import {PacketGameData, PacketPremiumItem} from "./packets/packets-types";
+import {PacketGameData, PacketMapVillage, PacketPremiumItem} from "./packets/packets-types";
 import {randomUUID, UUID} from "crypto";
 
 
@@ -244,6 +244,34 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
             this.on("onPacketReceived", listener);
         });
+    }
+
+    public async getVillagesByArea(startX: number, startY: number, widthUnits: number, heightUnits: number): Promise<PacketMapVillage[]> {
+        let villages: PacketMapVillage[] = [];
+
+        for (let xUnits = 0; xUnits < widthUnits; xUnits++) {
+            for (let yUnits = 0; yUnits < heightUnits; yUnits++) {
+                let response = await this.sendPacket({
+                    type: "Map/getVillagesByArea",
+                    data: {
+                        x: startX + xUnits * 50,
+                        y: startY + yUnits * 50,
+                        width: 50,
+                        height: 50
+                    }
+                });
+
+                if (response.type !== "Map/villageData") {
+                    throw new Error("Unexpected packet while fetching map villages. "+response.type, {
+                        cause: response
+                    });
+                }
+
+                villages.push(...response.data.villages);
+            }
+        }
+
+        return villages;
     }
 
     get user(): User | null {

@@ -50,7 +50,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 platform: "desktop"
             },
             secure: true,
-            transports: ["websocket", "polling", "polling-jsonp", "polling-xhr"]
+            transports: ["websocket"]
         });
     }
 

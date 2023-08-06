@@ -40,6 +40,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     constructor() {
         super();
 
+        this.setMaxListeners(100_000);
+
         // Create socket
         this.socket = io("wss://pl.tribalwars2.com", {
             query: {
@@ -247,11 +249,11 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     }
 
     public async getVillagesByArea(startX: number, startY: number, widthUnits: number, heightUnits: number): Promise<PacketMapVillage[]> {
-        let villages: PacketMapVillage[] = [];
+        let promises = []
 
         for (let xUnits = 0; xUnits < widthUnits; xUnits++) {
             for (let yUnits = 0; yUnits < heightUnits; yUnits++) {
-                let response = await this.sendPacket({
+                promises.push(this.sendPacket({
                     type: "Map/getVillagesByArea",
                     data: {
                         x: startX + xUnits * 50,
@@ -259,16 +261,23 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                         width: 50,
                         height: 50
                     }
-                });
+                }).then(response => {
+                    if (response.type !== "Map/villageData") {
+                        throw new Error("Unexpected packet while fetching map villages. "+response.type, {
+                            cause: response
+                        });
+                    }
 
-                if (response.type !== "Map/villageData") {
-                    throw new Error("Unexpected packet while fetching map villages. "+response.type, {
-                        cause: response
-                    });
-                }
-
-                villages.push(...response.data.villages);
+                    return response.data.villages;
+                }));
             }
+        }
+
+        let results = await Promise.all(promises);
+
+        let villages: PacketMapVillage[] = [];
+        for (let result of results) {
+            villages.push(...result);
         }
 
         return villages;

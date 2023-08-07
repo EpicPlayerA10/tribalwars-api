@@ -2,7 +2,7 @@
 import {
     AuthCharacterSelectedS2CPacket,
     AuthReconnectedS2CPacket,
-    CharacterProfileS2CPacket,
+    CharacterProfileS2CPacket, ChatTribeS2CPacket,
     GameDataS2CPacket, GameGuardGetInfoS2CPacket, GameGuardSecretTokenRefreshS2CPacket, GameGuardSendInfoS2CPacket,
     LoginSuccessS2CPacket,
     MapVillageDataS2CPacket, MapVillageDetailsS2CPacket,
@@ -19,7 +19,7 @@ import {
     AuthLoginC2SPacket,
     AuthReconnectC2SPacket,
     AuthSelectCharacterC2SPacket,
-    CharacterGetProfileC2SPacket,
+    CharacterGetProfileC2SPacket, ChatTribeC2SPacket,
     GameGetGameDataC2SPacket,
     GameGuardSendInfoC2SPacket, MapGetVillageDetailsC2SPacket,
     MapGetVillagesByAreaC2SPacket, PremiumListItemsC2SPacket,
@@ -56,8 +56,7 @@ export type BaseInternalC2SPacket = BasePacket & {
 export type BaseC2SPacket = Omit<BaseInternalC2SPacket, "id" | "data">;
 
 
-export type S2CPacket = Readonly<
-        MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemErrorS2CPacket // Message
+export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemErrorS2CPacket // Message
         | AuthReconnectedS2CPacket | AuthCharacterSelectedS2CPacket | LoginSuccessS2CPacket // Authentication
         | GameDataS2CPacket // Game Data
         | TribeSkillDonatedS2CPacket // TribeSkill
@@ -68,11 +67,10 @@ export type S2CPacket = Readonly<
         | GameGuardSendInfoS2CPacket | GameGuardGetInfoS2CPacket | GameGuardSecretTokenRefreshS2CPacket // GameGuard (probably game anticheat)
         | PremiumItemUsedS2CPacket | PremiumItemsS2CPacket // Premium
         | WheelEventSpunS2CPacket // Wheel Event
-        >
+        | ChatTribeS2CPacket // Tribe Chat
 
 
-export type C2SPacket = Readonly<
-        AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket // Authentication
+export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket // Authentication
         | GameGetGameDataC2SPacket // Game data
         | CharacterGetProfileC2SPacket // Character
         | TribeGetMemberListC2SPacket // Tribe
@@ -82,4 +80,4 @@ export type C2SPacket = Readonly<
         | GameGuardSendInfoC2SPacket // GameGuard (probably game anticheat)
         | WheelEventSpinC2SPacket | WheelEventGetProgressC2SPacket | WheelEventRefillC2SPacket | WheelEventStartEventC2SPacket | WheelEventGetEventC2SPacket // Wheel Event
         | PremiumUseItemC2SPacket | PremiumListItemsC2SPacket // Premium
-        >
+        | ChatTribeC2SPacket // Tribe Chat

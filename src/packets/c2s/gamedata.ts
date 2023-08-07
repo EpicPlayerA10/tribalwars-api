@@ -1,5 +1,5 @@
 import {BaseC2SPacket} from "../packets";
 
-export interface GameGetGameDataC2SPacket extends BaseC2SPacket {
+export type GameGetGameDataC2SPacket = Readonly<BaseC2SPacket & {
     type: "GameDataBatch/getGameData"
-}
+}>

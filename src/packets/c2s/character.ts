@@ -1,8 +1,8 @@
 import {BaseC2SPacket} from "../packets";
 
-export interface CharacterGetProfileC2SPacket extends BaseC2SPacket {
+export type CharacterGetProfileC2SPacket = Readonly<BaseC2SPacket & {
     type: "Character/getProfile",
     data: {
         character_id: number
     }
-}
+}>

@@ -1,11 +1,11 @@
 import {BaseS2CPacket} from "../packets";
 import {PacketCharacter, PacketWorld} from "../packets-types";
 
-export interface AuthReconnectedS2CPacket extends BaseS2CPacket {
+export type AuthReconnectedS2CPacket = Readonly<BaseS2CPacket & {
     type: "Authentication/reconnected"
-}
+}>
 
-export interface AuthCharacterSelectedS2CPacket extends BaseS2CPacket {
+export type AuthCharacterSelectedS2CPacket = Readonly<BaseS2CPacket & {
     type: "Authentication/characterSelected",
     data: {
         id: number,
@@ -18,9 +18,9 @@ export interface AuthCharacterSelectedS2CPacket extends BaseS2CPacket {
         tokenEmit: string,
         tribe_rights: string[]
     }
-}
+}>
 
-export interface LoginSuccessS2CPacket extends BaseS2CPacket {
+export type LoginSuccessS2CPacket = Readonly<BaseS2CPacket & {
     type: "Login/success",
     data: {
         player_id: number,
@@ -39,4 +39,4 @@ export interface LoginSuccessS2CPacket extends BaseS2CPacket {
         newsletter_window: boolean,
         salt: string
     }
-}
+}>

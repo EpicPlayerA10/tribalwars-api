@@ -1,6 +1,6 @@
 import {BaseS2CPacket} from "../packets";
 
-export interface CharacterProfileS2CPacket extends BaseS2CPacket {
+export type CharacterProfileS2CPacket = Readonly<BaseS2CPacket & {
     type: "Character/profile",
     data: {
         character_id: number
@@ -36,4 +36,4 @@ export interface CharacterProfileS2CPacket extends BaseS2CPacket {
         num_villages: number
         profile_title_id: number
     }
-}
+}>

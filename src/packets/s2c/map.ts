@@ -1,16 +1,16 @@
 import {BaseS2CPacket} from "../packets";
 import {PacketMapVillage} from "../packets-types";
 
-export interface MapVillageDataS2CPacket extends BaseS2CPacket {
+export type MapVillageDataS2CPacket = Readonly<BaseS2CPacket & {
     type: "Map/villageData",
     data: {
         villages: Array<PacketMapVillage>
         x: number
         y: number
     }
-}
+}>
 
-export interface MapVillageDetailsS2CPacket extends BaseS2CPacket {
+export type MapVillageDetailsS2CPacket = Readonly<BaseS2CPacket & {
     type: "Map/villageDetails",
     data: {
         village_id: number
@@ -105,4 +105,4 @@ export interface MapVillageDetailsS2CPacket extends BaseS2CPacket {
         }
         supporting_units: any
     }
-}
+}>

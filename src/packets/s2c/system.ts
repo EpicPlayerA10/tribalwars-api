@@ -1,14 +1,14 @@
 import {BaseS2CPacket} from "../packets";
 
-export interface MessageErrorS2CPacket extends BaseS2CPacket {
+export type MessageErrorS2CPacket = Readonly<BaseS2CPacket & {
     type: "Message/error",
     data: {
         error_code: string,
         message: string
     }
-}
+}>
 
-export interface SystemWelcomeS2CPacket extends BaseS2CPacket {
+export type SystemWelcomeS2CPacket = Readonly<BaseS2CPacket & {
     type: "System/welcome",
     data: {
         message: string,
@@ -16,9 +16,9 @@ export interface SystemWelcomeS2CPacket extends BaseS2CPacket {
         host: string,
         maintenance: boolean
     }
-}
+}>
 
-export interface SystemErrorS2CPacket extends BaseS2CPacket {
+export type SystemErrorS2CPacket = Readonly<BaseS2CPacket & {
     type: "System/error",
     data: {
         cause: string,
@@ -26,4 +26,4 @@ export interface SystemErrorS2CPacket extends BaseS2CPacket {
         details: [],
         message: string
     }
-}
+}>

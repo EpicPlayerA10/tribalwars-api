@@ -1,6 +1,6 @@
 import {BaseS2CPacket} from "../packets";
 
-export interface TribeSkillDonatedS2CPacket extends BaseS2CPacket {
+export type TribeSkillDonatedS2CPacket = Readonly<BaseS2CPacket & {
     type: "TribeSkill/donated",
     data: {
         level: number,
@@ -14,4 +14,4 @@ export interface TribeSkillDonatedS2CPacket extends BaseS2CPacket {
             honor_last_week: number
         }
     }
-}
+}>

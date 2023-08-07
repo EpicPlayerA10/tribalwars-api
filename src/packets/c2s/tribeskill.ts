@@ -1,6 +1,6 @@
 import {BaseC2SPacket} from "../packets";
 
-export interface TribeSkillDonateC2SPacket extends BaseC2SPacket {
+export type TribeSkillDonateC2SPacket = Readonly<BaseC2SPacket & {
     type: "TribeSkill/donate"
     data: {
         village_id: number
@@ -11,4 +11,4 @@ export interface TribeSkillDonateC2SPacket extends BaseC2SPacket {
             iron: number
         }
     }
-}
+}>

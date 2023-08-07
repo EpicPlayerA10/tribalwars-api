@@ -27,8 +27,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     public readonly socket: SocketIOClient.Socket;
 
     private packetCounter = 1;
-
     private tokenEmit: string | undefined;
+    private credentials: Credentials | undefined;
 
     // User
     private _user: User | null = null;
@@ -57,6 +57,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     }
 
     public connect(credentials: Credentials) {
+        this.credentials = credentials;
+
         this.socket.on("connect", () => {
             console.log("Connected");
         });
@@ -93,8 +95,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
         // Reconnect logic
         this.socket.on("reconnect", async () => {
-            //console.log("reconnect")
-            await this.reconnect(credentials);
+            await this.onReconnect();
         });
 
         // Second layer of reconnecting
@@ -102,8 +103,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             this.establishedConnection = false;
             // Server disconnects us
             if (reason === "io server disconnect") {
-                this.socket.connect();
-                await this.reconnect(credentials);
+                await this.reconnect();
             }
         });
 
@@ -113,11 +113,16 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             this.emit("onPacketReceived", packet, packet.id);
 
             if (firstWelcome && packet.type === "System/welcome") {
-                // Login to account
-                await this.login(credentials);
+                try {
+                    // Login to account
+                    await this.login();
 
-                // Fetches data
-                await this.syncData();
+                    // Fetches data
+                    await this.syncData();
+                } catch (e) {
+                    await this.reconnect();
+                    return;
+                }
 
                 this.establishedConnection = true;
 
@@ -131,13 +136,17 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         });
     }
 
-    private async login(credentials: Credentials) {
+    private async login() {
+        if (!this.credentials) {
+            throw Error("Credentials are not initialized");
+        }
+
         console.log("Logging in...")
         let loginResponse = await this.sendPacket({
             type: "Authentication/login",
             data: {
-                name: credentials.login,
-                pass: credentials.password
+                name: this.credentials.login,
+                pass: this.credentials.password
             }
         });
 
@@ -154,8 +163,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         let selectCharacterResponse = await this.sendPacket({
             type: "Authentication/selectCharacter",
             data: {
-                id: credentials.characterId,
-                world_id: credentials.worldId
+                id: this.credentials.characterId,
+                world_id: this.credentials.worldId
             }
         });
 
@@ -168,25 +177,42 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         }
     }
 
-    private async reconnect(credentials: Credentials) {
+    public async reconnect() {
+        this.socket.disconnect();
+        this.socket.connect();
+
+        await this.onReconnect();
+    }
+
+    private async onReconnect() {
         if (this.user === null) {
+            // Connection not first initialized. Let it be initialized by System/welcome packet
             return;
         }
 
-        let authResponse = await this.sendPacket({
-            type: "Authentication/reconnect",
-            data: {
-                character: credentials.characterId,
-                name: credentials.login,
-                world: credentials.worldId,
-                token: this.user.token
-            }
-        });
+        if (!this.credentials) {
+            throw Error("Credentials are not initialized");
+        }
 
-        if (authResponse.type !== "Authentication/reconnected") {
-            throw new Error("Unexpected packet while reconnecting. " + authResponse.type, {
-                cause: authResponse
+        try {
+            let authResponse = await this.sendPacket({
+                type: "Authentication/reconnect",
+                data: {
+                    character: this.credentials.characterId,
+                    name: this.credentials.login,
+                    world: this.credentials.worldId,
+                    token: this.user.token
+                }
             });
+
+            if (authResponse.type !== "Authentication/reconnected") {
+                throw new Error("Unexpected packet while reconnecting. " + authResponse.type, {
+                    cause: authResponse
+                });
+            }
+        } catch (e) {
+            await this.reconnect();
+            return;
         }
 
         this.establishedConnection = true;
@@ -221,6 +247,16 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         }
     }
 
+    /**
+     * Sends a packet to the server
+     *
+     * @param packet A packet of type {@link C2SPacket}
+     * @param response Should method return a promise with a server response
+     * @param timeout Time in milliseconds in which response should time out {@default 20000}
+     *
+     * @return Promise<S2CPacket> A promise when response=true
+     * @return void Nothing when response=false
+     */
     public sendPacket<T extends boolean = true>(packet: C2SPacket, response: T = true as T, timeout=20000): SendPacketReturnType<T> {
         let currentResponseId: ResponseID = `${this.packetCounter++}-${randomUUID()}`;
 

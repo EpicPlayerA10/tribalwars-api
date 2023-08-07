@@ -120,6 +120,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                     // Fetches data
                     await this.syncData();
                 } catch (e) {
+                    console.error(e);
                     await this.reconnect();
                     return;
                 }
@@ -211,6 +212,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 });
             }
         } catch (e) {
+            console.error(e);
             await this.reconnect();
             return;
         }

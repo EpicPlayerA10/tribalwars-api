@@ -20,6 +20,8 @@ export interface Credentials {
     worldId: string
 }
 
+type SendPacketReturnType<T extends boolean> = T extends true ? Promise<S2CPacket> : void;
+
 
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
     public readonly socket: SocketIOClient.Socket;
@@ -219,7 +221,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         }
     }
 
-    public sendPacket(packet: C2SPacket, timeout=20000): Promise<S2CPacket> {
+    public sendPacket<T extends boolean = true>(packet: C2SPacket, response: T = true as T, timeout=20000): SendPacketReturnType<T> {
         let currentResponseId: ResponseID = `${this.packetCounter++}-${randomUUID()}`;
 
         // Set some internal values
@@ -243,30 +245,34 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
         this.socket.emit("msg", packet);
 
-        // Return promise with received response packet
-        return new Promise<S2CPacket>((resolve, reject) => {
-            let timeoutCallback: NodeJS.Timeout | undefined;
+        if (response) {
+            // Return promise with received response packet
+            return new Promise<S2CPacket>((resolve, reject) => {
+                let timeoutCallback: NodeJS.Timeout | undefined;
 
-            if (timeout !== -1) {
-                timeoutCallback = setTimeout(() => {
-                    this.removeListener("onPacketReceived", listener);
-                    reject(Error(`Packet ${packet.type} timed out`));
-                }, timeout);
-            }
-
-            let listener: ClientEvents["onPacketReceived"] = (packet, responseId) => {
-                if (currentResponseId === responseId) {
-                    resolve(packet);
-
-                    if (timeoutCallback) {
-                        clearTimeout(timeoutCallback);
-                    }
-                    this.removeListener("onPacketReceived", listener);
+                if (timeout !== -1) {
+                    timeoutCallback = setTimeout(() => {
+                        this.removeListener("onPacketReceived", listener);
+                        reject(Error(`Packet ${packet.type} timed out`));
+                    }, timeout);
                 }
-            }
 
-            this.on("onPacketReceived", listener);
-        });
+                let listener: ClientEvents["onPacketReceived"] = (packet, responseId) => {
+                    if (currentResponseId === responseId) {
+                        resolve(packet);
+
+                        if (timeoutCallback) {
+                            clearTimeout(timeoutCallback);
+                        }
+                        this.removeListener("onPacketReceived", listener);
+                    }
+                }
+
+                this.on("onPacketReceived", listener);
+            }) as SendPacketReturnType<T>;
+        } else {
+            return undefined as SendPacketReturnType<T>;
+        }
     }
 
     public async getVillagesByArea(startX: number, startY: number, widthUnits: number, heightUnits: number): Promise<PacketMapVillage[]> {

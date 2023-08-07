@@ -6,7 +6,7 @@ import {
     GameDataS2CPacket, GameGuardGetInfoS2CPacket, GameGuardSecretTokenRefreshS2CPacket, GameGuardSendInfoS2CPacket,
     LoginSuccessS2CPacket,
     MapVillageDataS2CPacket, MapVillageDetailsS2CPacket,
-    MessageErrorS2CPacket, PremiumItemsS2CPacket, PremiumItemUsedS2CPacket,
+    MessageErrorS2CPacket, MessageNewS2CPacket, MessageSentS2CPacket, PremiumItemsS2CPacket, PremiumItemUsedS2CPacket,
     SystemErrorS2CPacket,
     SystemWelcomeS2CPacket,
     TribeMemberListS2CPacket,
@@ -22,7 +22,7 @@ import {
     CharacterGetProfileC2SPacket, ChatTribeC2SPacket,
     GameGetGameDataC2SPacket,
     GameGuardSendInfoC2SPacket, MapGetVillageDetailsC2SPacket,
-    MapGetVillagesByAreaC2SPacket, PremiumListItemsC2SPacket,
+    MapGetVillagesByAreaC2SPacket, MessageReplyC2SPacket, PremiumListItemsC2SPacket,
     PremiumUseItemC2SPacket,
     TribeGetMemberListC2SPacket,
     TribeSkillDonateC2SPacket,
@@ -56,7 +56,7 @@ export type BaseInternalC2SPacket = BasePacket & {
 export type BaseC2SPacket = Omit<BaseInternalC2SPacket, "id" | "data">;
 
 
-export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemErrorS2CPacket // Message
+export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemErrorS2CPacket // System
         | AuthReconnectedS2CPacket | AuthCharacterSelectedS2CPacket | LoginSuccessS2CPacket // Authentication
         | GameDataS2CPacket // Game Data
         | TribeSkillDonatedS2CPacket // TribeSkill
@@ -68,6 +68,7 @@ export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemE
         | PremiumItemUsedS2CPacket | PremiumItemsS2CPacket // Premium
         | WheelEventSpunS2CPacket // Wheel Event
         | ChatTribeS2CPacket // Tribe Chat
+        | MessageNewS2CPacket | MessageSentS2CPacket // Messages
 
 
 export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket // Authentication
@@ -81,3 +82,4 @@ export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelect
         | WheelEventSpinC2SPacket | WheelEventGetProgressC2SPacket | WheelEventRefillC2SPacket | WheelEventStartEventC2SPacket | WheelEventGetEventC2SPacket // Wheel Event
         | PremiumUseItemC2SPacket | PremiumListItemsC2SPacket // Premium
         | ChatTribeC2SPacket // Tribe Chat
+        | MessageReplyC2SPacket // Messages

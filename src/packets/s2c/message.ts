@@ -1,5 +1,4 @@
 import {BaseS2CPacket} from "../packets";
-import {PacketPremiumItem} from "../packets-types";
 
 export type MessageNewS2CPacket = Readonly<BaseS2CPacket & {
     type: "Message/new",

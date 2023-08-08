@@ -1,6 +1,6 @@
 {
   "name": "@epicplayera10/tribalwars-api",
-  "version": "1.0.38",
+  "version": "1.0.39",
   "description": "",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --build --clean & tsc",
-    "start": "ts-node tests/index.ts",
+    "start": "ts-node app/index.ts",
     "publish-pkg": "npm run build & npm publish"
   },
   "keywords": [],

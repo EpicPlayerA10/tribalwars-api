@@ -1,10 +1,10 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import {C2SPacket, S2CPacket, BasePacket, ResponseID, BaseC2SPacket, BaseInternalC2SPacket} from "./packets/packets";
+import {C2SPacket, S2CPacket, ResponseID, BaseInternalC2SPacket} from "./packets/packets";
 import io from "socket.io-client";
 import {User} from "./model/User";
-import {PacketGameData, PacketMapVillage, PacketPremiumItem} from "./packets/packets-types";
 import {randomUUID, UUID} from "crypto";
+import {GameDataS2CPacket, MapVillageDataS2CPacket, PremiumItemsS2CPacket} from "./packets/s2c";
 
 
 export type ClientEvents = {
@@ -34,10 +34,10 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
     private _user: User | null = null;
 
     // GameData
-    private _gameData: Readonly<PacketGameData> | null = null;
+    private _gameData: Readonly<GameDataS2CPacket["data"]> | null = null;
 
     // Inventory
-    private _inventory: Readonly<PacketPremiumItem>[] | null = null;
+    private _inventory: Readonly<PremiumItemsS2CPacket["data"]["inventory"]> | null = null;
 
     private establishedConnection = false;
 
@@ -52,7 +52,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 platform: "desktop"
             },
             secure: true,
-            transports: ["websocket"]
+            transports: ["websocket"],
+            autoConnect: false
         });
     }
 
@@ -135,6 +136,8 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
                 this.tokenEmit = packet.data.secret_token;
             }
         });
+
+        this.socket.connect();
     }
 
     private async login() {
@@ -308,13 +311,13 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
                 this.on("onPacketReceived", listener);
             }) as SendPacketReturnType<T>;
-        } else {
-            return undefined as SendPacketReturnType<T>;
         }
+
+        return undefined as SendPacketReturnType<T>;
     }
 
-    public async getVillagesByArea(startX: number, startY: number, widthUnits: number, heightUnits: number): Promise<PacketMapVillage[]> {
-        let promises = []
+    public async getVillagesByArea(startX: number, startY: number, widthUnits: number, heightUnits: number): Promise<MapVillageDataS2CPacket["data"]["villages"]> {
+        let promises: Promise<MapVillageDataS2CPacket["data"]["villages"]>[] = []
 
         for (let xUnits = 0; xUnits < widthUnits; xUnits++) {
             for (let yUnits = 0; yUnits < heightUnits; yUnits++) {
@@ -340,7 +343,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
         let results = await Promise.all(promises);
 
-        let villages: PacketMapVillage[] = [];
+        let villages: MapVillageDataS2CPacket["data"]["villages"] = [];
         for (let result of results) {
             villages.push(...result);
         }
@@ -348,16 +351,16 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         return villages;
     }
 
-    get user(): User | null {
+    get user() {
         return this._user;
     }
 
-    get gameData(): Readonly<PacketGameData> | null {
+    get gameData() {
         return this._gameData;
     }
 
 
-    get inventory(): Readonly<PacketPremiumItem>[] | null {
+    get inventory() {
         return this._inventory;
     }
 

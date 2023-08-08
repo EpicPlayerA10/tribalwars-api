@@ -1,5 +1,4 @@
 import {BaseS2CPacket} from "../packets";
-import {PacketCharacter, PacketWorld} from "../packets-types";
 
 export type AuthReconnectedS2CPacket = Readonly<BaseS2CPacket & {
     type: "Authentication/reconnected"
@@ -26,8 +25,23 @@ export type LoginSuccessS2CPacket = Readonly<BaseS2CPacket & {
         player_id: number,
         name: string,
         token: string,
-        characters: PacketCharacter[],
-        worlds: PacketWorld[],
+        characters: Array<{
+            character_id: number,
+            character_name: string,
+            world_id: string,
+            maintenance: boolean,
+            allow_login: boolean,
+            character_owner_id: number,
+            character_owner_name: string
+            key_required: boolean
+        }>,
+        worlds: Array<{
+            id: string,
+            name: string,
+            full: boolean,
+            recommended: number,
+            key_required: boolean
+        }>,
         invitations: [], // TODO
         premium: number,
         server_timestamp: number,

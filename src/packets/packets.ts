@@ -3,7 +3,7 @@ import {
     AuthCharacterSelectedS2CPacket,
     AuthReconnectedS2CPacket,
     CharacterProfileS2CPacket,
-    ChatTribeS2CPacket, DailyUnitDealAcceptedS2CPacket,
+    ChatTribeS2CPacket, CommandCancelledS2CPacket, CommandIncomingS2CPacket, DailyUnitDealAcceptedS2CPacket,
     GameDataS2CPacket,
     GameGuardGetInfoS2CPacket,
     GameGuardSecretTokenRefreshS2CPacket,
@@ -27,6 +27,7 @@ import {
 
 // S2C
 import {
+    AuthCreateCharacterC2SPacket,
     AuthLoginC2SPacket,
     AuthReconnectC2SPacket,
     AuthSelectCharacterC2SPacket,
@@ -79,7 +80,7 @@ export type BaseInternalC2SPacket = BasePacket & {
 export type BaseC2SPacket = Omit<BaseInternalC2SPacket, "id" | "data">;
 
 
-export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket // Authentication
+export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket | AuthCreateCharacterC2SPacket // Authentication
         | GameGetGameDataC2SPacket // Game data
         | CharacterGetProfileC2SPacket // Character
         | TribeGetMemberListC2SPacket // Tribe
@@ -111,3 +112,4 @@ export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemE
         | MessageNewS2CPacket | MessageSentS2CPacket // Messages
         | OverviewVillagesS2CPacket // Overview
         | DailyUnitDealAcceptedS2CPacket // DailyUnitDeal
+        | CommandIncomingS2CPacket | CommandCancelledS2CPacket // Command

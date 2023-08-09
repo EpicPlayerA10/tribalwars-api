@@ -1,4 +1,4 @@
-import {BaseS2CPacket} from "../packets";
+import {BaseS2CPacket, C2SPacket} from "../packets";
 
 export type MessageErrorS2CPacket = Readonly<BaseS2CPacket & {
     type: "Message/error",
@@ -21,7 +21,7 @@ export type SystemWelcomeS2CPacket = Readonly<BaseS2CPacket & {
 export type SystemErrorS2CPacket = Readonly<BaseS2CPacket & {
     type: "System/error",
     data: {
-        cause: string,
+        cause: C2SPacket["type"],
         code: string,
         details: [],
         message: string

@@ -24,3 +24,10 @@ export type AuthSelectCharacterC2SPacket = Readonly<BaseC2SPacket & {
         world_id: string
     }
 }>
+
+export type AuthCreateCharacterC2SPacket = Readonly<BaseC2SPacket & {
+    type: "Authentication/createCharacter",
+    data: {
+        world: string
+    }
+}>

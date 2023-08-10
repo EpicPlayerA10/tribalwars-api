@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import {User} from "./model/User";
 import {randomUUID, UUID} from "crypto";
 import {GameDataS2CPacket, MapVillageDataS2CPacket, PremiumItemsS2CPacket} from "./packets/s2c";
+import axios from "axios";
 
 
 export type ClientEvents = {
@@ -25,6 +26,8 @@ type SendPacketReturnType<T extends boolean> = T extends true ? Promise<S2CPacke
 
 export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
     public readonly socket: SocketIOClient.Socket;
+
+    private _lang: Record<string, any> | undefined;
 
     private packetCounter = 1;
     private tokenEmit: string | undefined;
@@ -57,11 +60,14 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         });
     }
 
-    public connect(credentials: Credentials) {
+    public async connect(credentials: Credentials) {
         this.credentials = credentials;
 
+        let response = await axios.get("https://twxpl.innogamescdn.com/lang/pl_pl_33d6b6b2de.json");
+        this._lang = response.data;
+
         this.socket.on("connect", () => {
-            console.log("Connected");
+            console.log("connected to socket");
         });
 
         this.socket.on("connect_error", (...args: any) => {
@@ -89,9 +95,9 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             console.log(args);
         });
 
-        this.socket.on("reconnecting", (...args: any) => {
+        this.socket.on("reconnecting", () => {
             this.establishedConnection = false;
-            console.log("reconnecting");
+            console.log("Lost connection. Reconnecting...");
         });
 
         // Reconnect logic
@@ -104,6 +110,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
             this.establishedConnection = false;
             // Server disconnects us
             if (reason === "io server disconnect") {
+                console.log("Got disconnected by the server. Reconnecting...");
                 await this.reconnect();
             }
         });
@@ -362,6 +369,10 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
 
     get inventory() {
         return this._inventory;
+    }
+
+    get lang() {
+        return this._lang;
     }
 
     public isConnected() {

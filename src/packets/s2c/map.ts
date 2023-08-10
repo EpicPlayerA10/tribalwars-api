@@ -1,4 +1,5 @@
 import {BaseS2CPacket} from "../packets";
+import {UnitTypes} from "../packets-types";
 
 export type MapVillageDataS2CPacket = Readonly<BaseS2CPacket & {
     type: "Map/villageData",
@@ -49,19 +50,7 @@ export type MapVillageDetailsS2CPacket = Readonly<BaseS2CPacket & {
             kingdom_name: string
         }
         walking_durations: {
-            spear: number
-            sword: number
-            axe: number
-            archer: number
-            light_cavalry: number
-            heavy_cavalry: number
-            mounted_archer: number
-            ram: number
-            catapult: number
-            knight: number
-            snob: number
-            trebuchet: number
-            doppelsoldner: number
+            [unit in UnitTypes]: number
         }
         province_bonus: any
         icons: Array<any>

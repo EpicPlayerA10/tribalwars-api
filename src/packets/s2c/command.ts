@@ -18,7 +18,7 @@ export type CommandIncomingS2CPacket = Readonly<BaseS2CPacket & {
         }
         id: number
         icon: number
-        preset_id: any
+        preset_id?: number
         home: {
             id: number
             name: string

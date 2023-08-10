@@ -96,3 +96,38 @@ export type OverviewVillagesS2CPacket = Readonly<BaseS2CPacket & {
         }>
     }
 }>
+
+export type OverviewIncomingS2CPacket = Readonly<BaseS2CPacket & {
+    type: "Overview/incoming",
+    data: {
+        offset: number
+        total: number
+        commands: Array<{
+            command_id: number
+            command_type: string
+            time_start: number
+            time_completed: number
+            command_name: string
+            target_village_id: number
+            target_village_name: string
+            target_x: number
+            target_y: number
+            target_province_id: number
+            target_province_name: string
+            target_continent_id: number
+            target_continent_name: string
+            target_groups: Array<number>
+            origin_village_id: number
+            origin_village_name: string
+            origin_x: number
+            origin_y: number
+            origin_province_id: number
+            origin_province_name: string
+            origin_continent_id: number
+            origin_continent_name: string
+            origin_groups: Array<number>
+            origin_character_id: number
+            origin_character_name: string
+        }>
+    }
+}>

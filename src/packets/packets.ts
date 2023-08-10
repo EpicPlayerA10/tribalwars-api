@@ -13,7 +13,7 @@ import {
     MapVillageDetailsS2CPacket,
     MessageErrorS2CPacket,
     MessageNewS2CPacket,
-    MessageSentS2CPacket,
+    MessageSentS2CPacket, OverviewIncomingS2CPacket,
     OverviewVillagesS2CPacket,
     PremiumItemsS2CPacket,
     PremiumItemUsedS2CPacket,
@@ -39,7 +39,7 @@ import {
     MapGetVillageDetailsC2SPacket,
     MapGetVillagesByAreaC2SPacket,
     MessageReplyC2SPacket,
-    MessageWriteC2SPacket,
+    MessageWriteC2SPacket, OverviewGetIncomingC2SPacket,
     OverviewGetVillagesC2SPacket,
     PremiumListItemsC2SPacket,
     PremiumUseItemC2SPacket,
@@ -92,7 +92,7 @@ export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelect
         | PremiumUseItemC2SPacket | PremiumListItemsC2SPacket // Premium
         | ChatTribeC2SPacket // Tribe Chat
         | MessageReplyC2SPacket | MessageWriteC2SPacket // Messages
-        | OverviewGetVillagesC2SPacket // Overview
+        | OverviewGetVillagesC2SPacket | OverviewGetIncomingC2SPacket // Overview
         | DailyUnitDealAcceptC2SPacket // DailyUnitDeal
         | TutorialStartC2SPacket | TutorialGetVillageToAttackC2SPacket | TutorialStartTaskC2SPacket // Tutorial
 
@@ -110,6 +110,6 @@ export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemE
         | WheelEventSpunS2CPacket // Wheel Event
         | ChatTribeS2CPacket // Tribe Chat
         | MessageNewS2CPacket | MessageSentS2CPacket // Messages
-        | OverviewVillagesS2CPacket // Overview
+        | OverviewVillagesS2CPacket | OverviewIncomingS2CPacket // Overview
         | DailyUnitDealAcceptedS2CPacket // DailyUnitDeal
         | CommandIncomingS2CPacket | CommandCancelledS2CPacket // Command

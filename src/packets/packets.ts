@@ -10,7 +10,7 @@ import {
     GameGuardSendInfoS2CPacket,
     LoginSuccessS2CPacket,
     MapVillageDataS2CPacket,
-    MapVillageDetailsS2CPacket,
+    MapVillageDetailsS2CPacket, MessageCharacterKickedS2CPacket,
     MessageErrorS2CPacket,
     MessageNewS2CPacket,
     MessageSentS2CPacket, OverviewIncomingS2CPacket,
@@ -31,13 +31,13 @@ import {
     AuthLoginC2SPacket,
     AuthReconnectC2SPacket,
     AuthSelectCharacterC2SPacket,
-    CharacterGetProfileC2SPacket,
+    CharacterGetProfileC2SPacket, CharacterSetProfileC2SPacket,
     ChatTribeC2SPacket,
     DailyUnitDealAcceptC2SPacket,
     GameGetGameDataC2SPacket,
     GameGuardSendInfoC2SPacket,
     MapGetVillageDetailsC2SPacket,
-    MapGetVillagesByAreaC2SPacket,
+    MapGetVillagesByAreaC2SPacket, MessageAddParticipantsC2SPacket, MessageKickC2SPacket,
     MessageReplyC2SPacket,
     MessageWriteC2SPacket, OverviewGetIncomingC2SPacket,
     OverviewGetVillagesC2SPacket,
@@ -82,7 +82,7 @@ export type BaseC2SPacket = Omit<BaseInternalC2SPacket, "id" | "data">;
 
 export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket | AuthCreateCharacterC2SPacket // Authentication
         | GameGetGameDataC2SPacket // Game data
-        | CharacterGetProfileC2SPacket // Character
+        | CharacterGetProfileC2SPacket | CharacterSetProfileC2SPacket // Character
         | TribeGetMemberListC2SPacket // Tribe
         | TribeSkillDonateC2SPacket | TribeSkillMassDonatingC2SPacket // TribeSkill
         | VillageGetVillageDataC2SPacket // Village
@@ -91,7 +91,7 @@ export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelect
         | WheelEventSpinC2SPacket | WheelEventGetProgressC2SPacket | WheelEventRefillC2SPacket | WheelEventStartEventC2SPacket | WheelEventGetEventC2SPacket // Wheel Event
         | PremiumUseItemC2SPacket | PremiumListItemsC2SPacket // Premium
         | ChatTribeC2SPacket // Tribe Chat
-        | MessageReplyC2SPacket | MessageWriteC2SPacket // Messages
+        | MessageReplyC2SPacket | MessageWriteC2SPacket | MessageKickC2SPacket | MessageAddParticipantsC2SPacket // Messages
         | OverviewGetVillagesC2SPacket | OverviewGetIncomingC2SPacket // Overview
         | DailyUnitDealAcceptC2SPacket // DailyUnitDeal
         | TutorialStartC2SPacket | TutorialGetVillageToAttackC2SPacket | TutorialStartTaskC2SPacket // Tutorial
@@ -109,7 +109,7 @@ export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemE
         | PremiumItemUsedS2CPacket | PremiumItemsS2CPacket // Premium
         | WheelEventSpunS2CPacket // Wheel Event
         | ChatTribeS2CPacket // Tribe Chat
-        | MessageNewS2CPacket | MessageSentS2CPacket // Messages
+        | MessageNewS2CPacket | MessageSentS2CPacket | MessageCharacterKickedS2CPacket // Messages
         | OverviewVillagesS2CPacket | OverviewIncomingS2CPacket // Overview
         | DailyUnitDealAcceptedS2CPacket // DailyUnitDeal
         | CommandIncomingS2CPacket | CommandCancelledS2CPacket // Command

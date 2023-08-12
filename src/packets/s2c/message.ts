@@ -41,3 +41,11 @@ export type MessageSentS2CPacket = Readonly<BaseS2CPacket & {
         }
     }
 }>
+
+export type MessageCharacterKickedS2CPacket = Readonly<BaseS2CPacket & {
+    type: "Message/characterKicked",
+    data: {
+        message_id: number
+        character_id: number
+    }
+}>

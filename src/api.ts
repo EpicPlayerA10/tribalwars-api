@@ -66,10 +66,6 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         let response = await axios.get("https://twxpl.innogamescdn.com/lang/pl_pl_33d6b6b2de.json");
         this._lang = response.data;
 
-        this.socket.on("connect", () => {
-            console.log("connected to socket");
-        });
-
         this.socket.on("connect_error", (...args: any) => {
             console.log("connect_error");
             console.log(args);
@@ -108,7 +104,7 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         // Second layer of reconnecting
         this.socket.on("disconnect", async (reason: string) => {
             this.establishedConnection = false;
-            // Server disconnects us
+            // Server disconnected us
             if (reason === "io server disconnect") {
                 console.log("Got disconnected by the server. Reconnecting...");
                 await this.reconnect();

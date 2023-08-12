@@ -1,6 +1,6 @@
 import {BaseS2CPacket} from "../packets";
 
-// Acknowledge packet
+// Acknowledgement packet
 export type GameGuardSendInfoS2CPacket = Readonly<BaseS2CPacket & {
     type: "GameGuard/sendInfo",
     data: {} // Seems to be empty
@@ -18,5 +18,12 @@ export type GameGuardSecretTokenRefreshS2CPacket = Readonly<BaseS2CPacket & {
     type: "GameGuard/secretTokenRefresh",
     data: {
         secret_token: string
+    }
+}>
+
+export type GameGuardGetMobileInfoS2CPacket = Readonly<BaseS2CPacket & {
+    type: "GameGuard/getMobileInfo",
+    data: {
+        checkId: number
     }
 }>

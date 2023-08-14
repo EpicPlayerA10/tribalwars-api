@@ -14,12 +14,17 @@ export type ClientEvents = {
     ready: () => void
 }
 
-export interface Credentials {
+export type Credentials = {
     login: string
-    password: string
     characterId: number
-    worldId: string
-}
+    worldId: string,
+    bypassBan?: boolean
+} & ({
+    password: string
+} | {
+    token: string,
+    bypassBanV2?: boolean
+});
 
 type SendPacketReturnType<T extends boolean> = T extends true ? Promise<S2CPacket> : void;
 
@@ -149,38 +154,98 @@ export class TribalWarsClient extends (EventEmitter as new () => TypedEmitter<Cl
         }
 
         console.log("Logging in...")
-        let loginResponse = await this.sendPacket({
-            type: "Authentication/login",
-            data: {
-                name: this.credentials.login,
-                pass: this.credentials.password
-            }
-        });
 
-        if (loginResponse.type === "Login/success") {
-            this._user = new User(loginResponse);
-            console.log("Logged in!");
+        let loginResponse: S2CPacket;
+        let expectedLoginResponse: S2CPacket["type"];
+        if ('password' in this.credentials) {
+            // Login using password
+            loginResponse = await this.sendPacket({
+                type: "Authentication/login",
+                data: {
+                    name: this.credentials.login,
+                    pass: this.credentials.password
+                }
+            });
+
+            expectedLoginResponse = "Login/success";
+        } else {
+            // Login using token
+
+            if (this.credentials.bypassBanV2) {
+                // We can BYPASS BAN XD
+                loginResponse = await this.sendPacket({
+                    type: "Authentication/reconnect",
+                    data: {
+                        character: this.credentials.characterId,
+                        name: this.credentials.login,
+                        world: this.credentials.worldId,
+                        token: this.credentials.token
+                    }
+                });
+
+                expectedLoginResponse = "Authentication/reconnected";
+            } else {
+                loginResponse = await this.sendPacket({
+                    type: "Authentication/login",
+                    data: {
+                        name: this.credentials.login,
+                        token: this.credentials.token
+                    }
+                });
+
+                expectedLoginResponse = "Login/success";
+            }
+        }
+
+        if (loginResponse.type === expectedLoginResponse) {
+            if (loginResponse.type === "Login/success") {
+                this._user = new User(loginResponse);
+            }
         } else {
             throw new Error("Unexpected packet while logging in. "+loginResponse.type, {
                 cause: loginResponse
             });
         }
 
-        // Select character
-        let selectCharacterResponse = await this.sendPacket({
-            type: "Authentication/selectCharacter",
-            data: {
-                id: this.credentials.characterId,
-                world_id: this.credentials.worldId
-            }
-        });
+        console.log("Logged in!");
 
-        if (selectCharacterResponse.type === "Authentication/characterSelected") {
-            this.tokenEmit = selectCharacterResponse.data.tokenEmit;
-        } else {
-            throw new Error("Unexpected packet while selecting character. "+selectCharacterResponse.type, {
-                cause: selectCharacterResponse
-            });
+        // Select character (we can BYPASS BAN there too XDDD)
+        if (expectedLoginResponse !== "Authentication/reconnected") {
+            if (this.credentials.bypassBan) {
+                // Reconnect to bypass ban XD
+                let authResponse = await this.sendPacket({
+                    type: "Authentication/reconnect",
+                    data: {
+                        character: this.credentials.characterId,
+                        name: this.credentials.login,
+                        world: this.credentials.worldId,
+                        token: this.user!.token
+                    }
+                });
+
+                if (authResponse.type !== "Authentication/reconnected") {
+                    throw new Error("Unexpected packet while reconnecting. " + authResponse.type, {
+                        cause: authResponse
+                    });
+                }
+            } else {
+                // Normal select character
+                let selectCharacterResponse = await this.sendPacket({
+                    type: "Authentication/selectCharacter",
+                    data: {
+                        id: this.credentials.characterId,
+                        world_id: this.credentials.worldId
+                    }
+                });
+
+                if (selectCharacterResponse.type === "Authentication/characterSelected") {
+                    this.tokenEmit = selectCharacterResponse.data.tokenEmit;
+                } else {
+                    throw new Error("Unexpected packet while selecting character. " + selectCharacterResponse.type, {
+                        cause: selectCharacterResponse
+                    });
+                }
+            }
         }
     }
 

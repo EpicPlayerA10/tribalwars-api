@@ -30,7 +30,7 @@ import {
     AuthCreateCharacterC2SPacket,
     AuthLoginC2SPacket,
     AuthReconnectC2SPacket,
-    AuthSelectCharacterC2SPacket,
+    AuthSelectCharacterC2SPacket, CharacterGetInfoC2SPacket,
     CharacterGetProfileC2SPacket, CharacterSetProfileC2SPacket,
     ChatTribeC2SPacket,
     DailyUnitDealAcceptC2SPacket,
@@ -82,7 +82,7 @@ export type BaseC2SPacket = Omit<BaseInternalC2SPacket, "id" | "data">;
 
 export type C2SPacket = AuthLoginC2SPacket | AuthReconnectC2SPacket | AuthSelectCharacterC2SPacket | AuthCreateCharacterC2SPacket // Authentication
         | GameGetGameDataC2SPacket // Game data
-        | CharacterGetProfileC2SPacket | CharacterSetProfileC2SPacket // Character
+        | CharacterGetProfileC2SPacket | CharacterSetProfileC2SPacket | CharacterGetInfoC2SPacket // Character
         | TribeGetMemberListC2SPacket // Tribe
         | TribeSkillDonateC2SPacket | TribeSkillMassDonatingC2SPacket // TribeSkill
         | VillageGetVillageDataC2SPacket // Village

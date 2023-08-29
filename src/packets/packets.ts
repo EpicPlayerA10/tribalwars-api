@@ -21,7 +21,7 @@ import {
     SystemWelcomeS2CPacket,
     TribeMemberListS2CPacket,
     TribeSkillDonatedS2CPacket,
-    VillageDataS2CPacket,
+    VillageDataS2CPacket, WheelEventProgressS2CPacket,
     WheelEventSpunS2CPacket
 } from "./s2c";
 
@@ -107,7 +107,7 @@ export type S2CPacket = MessageErrorS2CPacket | SystemWelcomeS2CPacket | SystemE
         | MapVillageDataS2CPacket | MapVillageDetailsS2CPacket // Map
         | GameGuardSendInfoS2CPacket | GameGuardGetInfoS2CPacket | GameGuardSecretTokenRefreshS2CPacket | GameGuardGetMobileInfoS2CPacket // GameGuard (probably game anticheat)
         | PremiumItemUsedS2CPacket | PremiumItemsS2CPacket // Premium
-        | WheelEventSpunS2CPacket // Wheel Event
+        | WheelEventSpunS2CPacket | WheelEventProgressS2CPacket // Wheel Event
         | ChatTribeS2CPacket // Tribe Chat
         | MessageNewS2CPacket | MessageSentS2CPacket | MessageCharacterKickedS2CPacket // Messages
         | OverviewVillagesS2CPacket | OverviewIncomingS2CPacket // Overview

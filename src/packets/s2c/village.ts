@@ -1,5 +1,5 @@
 import {BaseS2CPacket} from "../packets";
-import {UnitTypes} from "../packets-types";
+import {UnitType} from "../packets-types";
 
 export type VillageDataS2CPacket = Readonly<BaseS2CPacket & {
     type: "VillageBatch/villageData",
@@ -52,7 +52,7 @@ export type VillageDataS2CPacket = Readonly<BaseS2CPacket & {
             "Village/unitInfo": {
                 village_id: number
                 available_units: {
-                    [unit in UnitTypes]: {
+                    [unit in UnitType]: {
                         in_town: number
                         support: number
                         total: number

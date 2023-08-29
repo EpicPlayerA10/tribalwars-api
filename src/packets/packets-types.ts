@@ -1,4 +1,4 @@
-export type UnitTypes =
+export type UnitType =
         "spear"
         | "sword"
         | "axe"

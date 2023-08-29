@@ -1,5 +1,5 @@
 import {BaseS2CPacket} from "../packets";
-import {Building, Officer, UnitTypes} from "../packets-types";
+import {Building, Officer, UnitType} from "../packets-types";
 
 export type GameDataS2CPacket = Readonly<BaseS2CPacket & {
     type: "GameDataBatch/gameData",
@@ -84,7 +84,7 @@ export type GameDataS2CPacket = Readonly<BaseS2CPacket & {
             }
         }
         "GameData/units": {
-            [unit in UnitTypes]: {
+            [unit in UnitType]: {
                 name: string
                 building: string
                 required_level: number

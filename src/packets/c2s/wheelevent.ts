@@ -32,7 +32,4 @@ export type WheelEventStartEventC2SPacket = Readonly<BaseC2SPacket & {
 
 export type WheelEventGetEventC2SPacket = Readonly<BaseC2SPacket & {
     type: "WheelEvent/getEvent"
-    data: {
-        event_id?: number
-    }
 }>
